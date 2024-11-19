@@ -1,0 +1,159 @@
+/* General Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2.5em;
+  margin-bottom: 30px;
+}
+
+.issue-form {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.issue-form input,
+.issue-form textarea,
+.issue-form select {
+  padding: 12px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.issue-form input:focus,
+.issue-form textarea:focus,
+.issue-form select:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+  outline: none;
+}
+
+.issue-form button {
+  background-color: #3498db;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.issue-form button:hover {
+  background-color: #2980b9;
+}
+
+h2 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2em;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* Issue List Styles */
+#issueList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.issue {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.issue:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.issue h3 {
+  font-size: 1.4em;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.issue p {
+  margin: 8px 0;
+  line-height: 1.5;
+  color: #7f8c8d;
+}
+
+.issue-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9em;
+  display: inline-block;
+  color: #fff;
+  margin-top: 10px;
+}
+
+/* Status Color Coding */
+.issue-status.Open {
+  background-color: #e74c3c;
+}
+
+.issue-status.InProgress {
+  background-color: #f39c12;
+}
+
+.issue-status.Closed {
+  background-color: #2ecc71;
+}
+/* Styling for the delete icon */
+.delete-icon {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.delete-icon:hover {
+  color: #c0392b;
+}
+/* Style for the GitHub link */
+.issue a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.issue a:hover {
+  text-decoration: underline;
+}
+/* Styling for the edit icon */
+.edit-icon {
+  color: #3498db;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.edit-icon:hover {
+  color: #2980b9;
+}
