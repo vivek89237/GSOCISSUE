@@ -1,198 +1,92 @@
-import React, { useState, useEffect } from "react";
-import { db } from "./firebase";
-import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, onSnapshot } from "firebase/firestore"; // Include updateDoc for updating issues
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 const App = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("Open");
-  const [githubLink, setGithubLink] = useState(""); // GitHub link field
-  const [issueId, setIssueId] = useState(null); // To track if we're editing an issue
-
-  // Function to handle form submission (create or update issue)
-  const submitIssue = async (e) => {
-    e.preventDefault();
-
-    if (title && description) {
-      if (issueId) {
-        // Update existing issue
-        try {
-          const issueRef = doc(db, "issues", issueId);
-          await updateDoc(issueRef, {
-            title: title,
-            description: description,
-            status: status,
-            githubLink: githubLink, // Update GitHub link as well
-          });
-          alert("Issue updated successfully!");
-          clearForm();
-        } catch (error) {
-          console.error("Error updating issue: ", error);
-        }
-      } else {
-        // Add new issue
-        try {
-          await addDoc(collection(db, "issues"), {
-            title: title,
-            description: description,
-            status: status,
-            githubLink: githubLink,
-            created_at: serverTimestamp(), // Use serverTimestamp from the Firestore module
-          });
-          alert("Issue added successfully!");
-          clearForm();
-        } catch (error) {
-          console.error("Error adding issue: ", error);
-        }
-      }
-    } else {
-      alert("Please fill in all fields.");
-    }
-  };
-
-  // Function to clear the form after submission or update
-  const clearForm = () => {
-    setTitle("");
-    setDescription("");
-    setStatus("Open");
-    setGithubLink("");
-    setIssueId(null);
-  };
-
-  // Function to handle editing an issue
-  const handleEdit = (issue) => {
-    setTitle(issue.title);
-    setDescription(issue.description);
-    setStatus(issue.status);
-    setGithubLink(issue.githubLink || "");
-    setIssueId(issue.id); // Set the issue ID so we know we're editing
-  };
-
-  return (
-    <div className="App">
-      <h1>GitHub Issue Tracker</h1>
-      <IssueForm
-        title={title}
-        setTitle={setTitle}
-        description={description}
-        setDescription={setDescription}
-        status={status}
-        setStatus={setStatus}
-        githubLink={githubLink}
-        setGithubLink={setGithubLink}
-        issueId={issueId}
-        submitIssue={submitIssue}
-        clearForm={clearForm}
-      />
-      <h2>Issue List</h2>
-      <IssueList handleEdit={handleEdit} />
-    </div>
-  );
-};
-
-// IssueForm Component for submitting or editing issues
-const IssueForm = ({
-  title,
-  setTitle,
-  description,
-  setDescription,
-  status,
-  setStatus,
-  githubLink,
-  setGithubLink,
-  issueId,
-  submitIssue,
-  clearForm,
-}) => {
-  return (
-    <form className="issue-form" onSubmit={submitIssue}>
-      <input
-        type="text"
-        placeholder="Issue Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-      <textarea
-        placeholder="Issue Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        required
-      />
-      <select value={status} onChange={(e) => setStatus(e.target.value)}>
-        <option value="Open">Open</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Closed">Closed</option>
-      </select>
-      <input
-        type="url"
-        placeholder="GitHub Link (optional)"
-        value={githubLink}
-        onChange={(e) => setGithubLink(e.target.value)}
-      />
-      <button type="submit">{issueId ? "Update Issue" : "Submit Issue"}</button>
-      {issueId && <button type="button" onClick={clearForm}>Cancel Edit</button>}
-    </form>
-  );
-};
-
-// IssueList Component for displaying, editing, and deleting issues
-const IssueList = ({ handleEdit }) => {
-  const [issues, setIssues] = useState([]);
+  const [repos, setRepos] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, "issues"), orderBy("created_at", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const issuesData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setIssues(issuesData);
-    });
-
-    return () => unsubscribe();
+    const dummyData = [
+      {
+        name: "OpenWISP",
+        description: "The Hackable Network Management System",
+        category: "End user applications",
+        technologies: ["python", "javascript", "django", "lua", "openwrt"],
+        topics: ["networking", "network management system", "vpn", "sdn"]
+      },
+      {
+        name: "Stellar Group",
+        description: "Shaping a Scalable Future",
+        category: "Science and medicine",
+        technologies: ["C++", "hpc"],
+        topics: ["library", "optimization", "parallel algorithms", "hpx", "application"]
+      },
+      {
+        name: "TARDIS RT Collaboration",
+        description: "Exploring supernovae made easy",
+        category: "Science and medicine",
+        technologies: ["python", "numba", "numpy", "jupyter", "pandas"],
+        topics: ["visualization", "big data", "simulation", "astrophysics"]
+      },
+    ];
+    setRepos(dummyData);
   }, []);
 
-  // Function to delete an issue
-  const deleteIssue = async (id) => {
-    try {
-      await deleteDoc(doc(db, "issues", id));
-      alert("Issue deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting issue: ", error);
-    }
-  };
-
   return (
-    <div id="issueList">
-      {issues.map((issue) => (
-        <div key={issue.id} className="issue">
-          <h3>{issue.title}</h3>
-          <p>{issue.description}</p>
-          <span className={`issue-status ${issue.status.replace(/\s+/g, '')}`}>
-            {issue.status}
-          </span>
-          {issue.githubLink && (
-            <p>
-              <a href={issue.githubLink} target="_blank" rel="noopener noreferrer">
-                GitHub Link
-              </a>
-            </p>
-          )}
-          {/* Edit and Delete icons */}
-          <i 
-            className="fas fa-edit edit-icon"
-            onClick={() => handleEdit(issue)} // Pass issue to handleEdit
-            title="Edit Issue"
-          ></i>
-          <i 
-            className="fas fa-trash-alt delete-icon"
-            onClick={() => deleteIssue(issue.id)} // Delete the issue
-            title="Delete Issue"
-          ></i>
-        </div>
-      ))}
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-gray-100 to-purple-100">
+      <header className="p-6 bg-blue-600 text-white text-center shadow-lg">
+        <h1 className="text-3xl font-extrabold tracking-wide">GSOC Issue Tracker</h1>
+      </header>
+      <main className="p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {repos.map((repo, index) => (
+          <div
+            key={index}
+            className="bg-white border border-gray-200 shadow-lg rounded-xl p-6 hover:shadow-2xl transition-all duration-300"
+          >
+            <h2 className="text-2xl font-semibold text-blue-600 mb-3">{repo.name}</h2>
+            <p className="text-gray-700 mb-4">{repo.description}</p>
+
+            <div className="mb-4">
+              <span className="block text-sm font-semibold text-gray-800">Category:</span>
+              <span className="text-gray-600">{repo.category}</span>
+            </div>
+
+            <div className="mb-4">
+              <span className="block text-sm font-semibold text-gray-800">Technologies:</span>
+              <div className="flex flex-wrap mt-2">
+                {repo.technologies.map((tech, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs text-white bg-blue-500 rounded-full px-3 py-1 m-1 font-semibold shadow-md transition duration-200 transform hover:scale-105"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <span className="block text-sm font-semibold text-gray-800">Topics:</span>
+              <div className="flex flex-wrap mt-2">
+                {repo.topics.map((topic, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs text-white bg-yellow-500 rounded-full px-3 py-1 m-1 font-semibold shadow-md transition duration-200 transform hover:scale-105"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <button
+              className="mt-4 w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+              onClick={() => alert(`Viewing details for ${repo.name}`)}
+            >
+              View Details
+            </button>
+          </div>
+        ))}
+      </main>
     </div>
   );
 };
